@@ -21,6 +21,10 @@
         .search-btn {
             @apply w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500;
         }
+        /* Styles for the custom dropdown */
+        .taxonomy-option {
+            @apply px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-indigo-50 hover:text-indigo-900;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -37,9 +41,12 @@
                         <label for="npi" class="form-label">NPI Number</label>
                         <input type="text" id="npi" name="npi" class="form-input" placeholder="e.g., 1234567890">
                     </div>
-                    <div>
-                        <label for="taxonomy" class="form-label">Taxonomy Description</label>
-                        <input type="text" id="taxonomy" name="taxonomy" class="form-input" placeholder="e.g., Cardiology">
+                     <div class="relative">
+                        <label for="taxonomy-input" class="form-label">Taxonomy Description</label>
+                        <input type="text" id="taxonomy-input" class="form-input" placeholder="Search for a taxonomy..." autocomplete="off">
+                        <div id="taxonomy-dropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden max-h-60 overflow-y-auto">
+                            <!-- Options will be populated by JS -->
+                        </div>
                     </div>
                     <div>
                         <label for="first_name" class="form-label">First Name</label>
@@ -86,6 +93,67 @@
 
         let currentResultsData = [];
 
+        // --- Taxonomy Dropdown Logic ---
+        const taxonomyInput = document.getElementById('taxonomy-input');
+        const taxonomyDropdown = document.getElementById('taxonomy-dropdown');
+        const taxonomyList = [
+            "Acupuncturist", "Allergy & Immunology", "Anesthesiology", "Audiologist", "Cardiology",
+            "Chiropractic", "Clinical Cardiac Electrophysiology", "Clinical Neuropsychologist", "Clinical Psychologist", "Clinical Social Worker",
+            "Colon & Rectal Surgery", "Counselor", "Critical Care Medicine", "Dentist", "Dermatology",
+            "Diagnostic Radiology", "Dietitian, Registered", "Durable Medical Equipment & Medical Supplies", "Emergency Medicine", "Endocrinology, Diabetes & Metabolism",
+            "Family Medicine", "Gastroenterology", "General Practice", "General Surgery", "Genetics, Medical",
+            "Geriatric Medicine", "Hematology", "Hematology & Oncology", "Home Health", "Hospice",
+            "Hospitalist", "Infectious Disease", "Internal Medicine", "Interventional Cardiology", "Interventional Radiology",
+            "Licensed Practical Nurse", "Marriage & Family Therapist", "Massage Therapist", "Medical Oncology", "Mental Health Counselor",
+            "Midwife", "Nephrology", "Neurology", "Neurosurgery", "Nurse Practitioner",
+            "Obstetrics & Gynecology", "Occupational Therapist", "Oncology", "Ophthalmology", "Optometrist",
+            "Oral & Maxillofacial Surgery", "Orthopaedic Surgery", "Otolaryngology", "Pain Medicine", "Pathology",
+            "Pediatrics", "Pharmacy", "Physical Medicine & Rehabilitation", "Physical Therapist", "Physician Assistant",
+            "Plastic Surgery", "Podiatry", "Psychiatry", "Psychiatry & Neurology", "Psychologist",
+            "Pulmonary Disease", "Radiation Oncology", "Radiology", "Registered Nurse", "Rheumatology",
+            "Skilled Nursing Facility", "Sleep Medicine", "Social Worker", "Speech-Language Pathologist", "Sports Medicine",
+            "Surgery", "Thoracic Surgery (Cardiothoracic Vascular Surgery)", "Urology", "Vascular Surgery"
+        ];
+
+        function populateTaxonomyDropdown() {
+            taxonomyDropdown.innerHTML = '';
+            taxonomyList.forEach(item => {
+                const option = document.createElement('div');
+                option.classList.add('taxonomy-option');
+                option.textContent = item;
+                option.addEventListener('mousedown', () => { // mousedown fires before blur
+                    taxonomyInput.value = item;
+                    taxonomyDropdown.classList.add('hidden');
+                });
+                taxonomyDropdown.appendChild(option);
+            });
+        }
+        
+        function filterTaxonomyDropdown() {
+            const filter = taxonomyInput.value.toUpperCase();
+            const options = taxonomyDropdown.getElementsByClassName('taxonomy-option');
+            for (let i = 0; i < options.length; i++) {
+                const txtValue = options[i].textContent || options[i].innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    options[i].style.display = "";
+                } else {
+                    options[i].style.display = "none";
+                }
+            }
+        }
+
+        taxonomyInput.addEventListener('focus', () => taxonomyDropdown.classList.remove('hidden'));
+        taxonomyInput.addEventListener('blur', () => {
+            // We use a short delay to allow the click on an option to register
+            setTimeout(() => taxonomyDropdown.classList.add('hidden'), 150);
+        });
+        taxonomyInput.addEventListener('input', filterTaxonomyDropdown);
+        
+        // Initial population
+        populateTaxonomyDropdown();
+        // --- End Taxonomy Dropdown Logic ---
+
+
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             
@@ -101,7 +169,7 @@
             const organizationName = document.getElementById('organization_name').value;
             const city = document.getElementById('city').value;
             const state = document.getElementById('state').value;
-            const taxonomy = document.getElementById('taxonomy').value;
+            const taxonomy = document.getElementById('taxonomy-input').value; // Updated to use new input
 
             if (npi) params.append('number', npi);
             if (firstName) params.append('first_name', firstName);
@@ -311,3 +379,4 @@
     </script>
 </body>
 </html>
+
