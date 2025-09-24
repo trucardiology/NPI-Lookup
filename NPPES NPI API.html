@@ -37,36 +37,36 @@
             <!-- Search form -->
             <form id="search-form">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
                         <label for="npi" class="form-label">NPI Number</label>
-                        <input type="text" id="npi" name="npi" class="form-input" placeholder="e.g., 1234567890">
+                        <input type="text" id="npi" name="npi" class="form-input">
                     </div>
-                     <div class="relative">
+                     <div class="relative p-4 border border-gray-200 rounded-lg">
                         <label for="taxonomy-input" class="form-label">Taxonomy Description</label>
-                        <input type="text" id="taxonomy-input" class="form-input" placeholder="Search for a taxonomy..." autocomplete="off">
+                        <input type="text" id="taxonomy-input" class="form-input" autocomplete="off">
                         <div id="taxonomy-dropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden max-h-60 overflow-y-auto">
                             <!-- Options will be populated by JS -->
                         </div>
                     </div>
-                    <div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
                         <label for="first_name" class="form-label">First Name</label>
-                        <input type="text" id="first_name" name="first_name" class="form-input" placeholder="e.g., John">
+                        <input type="text" id="first_name" name="first_name" class="form-input">
                     </div>
-                    <div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
                         <label for="last_name" class="form-label">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" class="form-input" placeholder="e.g., Smith">
+                        <input type="text" id="last_name" name="last_name" class="form-input">
                     </div>
-                     <div>
+                     <div class="p-4 border border-gray-200 rounded-lg">
                         <label for="organization_name" class="form-label">Organization Name</label>
-                        <input type="text" id="organization_name" name="organization_name" class="form-input" placeholder="e.g., General Hospital">
+                        <input type="text" id="organization_name" name="organization_name" class="form-input">
                     </div>
-                    <div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
                         <label for="city" class="form-label">City</label>
-                        <input type="text" id="city" name="city" class="form-input" placeholder="e.g., New York">
+                        <input type="text" id="city" name="city" class="form-input">
                     </div>
-                    <div>
+                    <div class="p-4 border border-gray-200 rounded-lg">
                         <label for="state" class="form-label">State (2-letter code)</label>
-                        <input type="text" id="state" name="state" maxlength="2" class="form-input" placeholder="e.g., NY">
+                        <input type="text" id="state" name="state" maxlength="2" class="form-input">
                     </div>
                 </div>
                 <div class="mt-6">
