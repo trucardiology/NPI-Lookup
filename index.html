@@ -3,39 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NPPES NPI Registry Search</title>
+    <title>Search NPI Database</title>
+    <!-- Using Tailwind CSS for a clean, modern design -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles for a little extra polish */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7fafc; /* Lighter background */
-        }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        .form-label {
-            @apply block text-sm font-medium text-gray-700 mb-1;
-        }
-        .form-input {
-            @apply block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm; /* Updated focus colors and transition */
-        }
-        .search-btn {
-            @apply w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300; /* Updated colors and padding */
-        }
-        /* Styles for the custom dropdown */
-        .taxonomy-option {
-            @apply px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-indigo-100 hover:text-indigo-900; /* Updated hover colors */
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-50">
+<body>
 
-    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-5xl">
-        <div id="search-container" class="bg-white p-8 rounded-xl shadow-lg">
-            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">NPPES NPI Registry Search</h1>
-            <p class="text-gray-600 mb-6">Enter search criteria below to find a provider's NPI data.</p>
-
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div id="search-container" class="card">
+            <h1 class="heading-primary">Search NPI Database</h1>
+            
+            <!-- Search form -->
             <form id="search-form">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div class="input-group">
                     <div>
                         <label for="npi" class="form-label">NPI Number</label>
                         <input type="text" id="npi" name="npi" class="form-input">
@@ -43,8 +24,9 @@
                      <div class="relative">
                         <label for="taxonomy-input" class="form-label">Taxonomy Description</label>
                         <input type="text" id="taxonomy-input" class="form-input" autocomplete="off">
-                        <div id="taxonomy-dropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden max-h-60 overflow-y-auto">
-                            </div>
+                        <div id="taxonomy-dropdown" class="taxonomy-dropdown hidden">
+                            <!-- Options will be populated by JS -->
+                        </div>
                     </div>
                     <div>
                         <label for="first_name" class="form-label">First Name</label>
@@ -75,6 +57,7 @@
             </form>
         </div>
 
+        <!-- Container for results and details -->
         <div id="results-container" class="mt-8"></div>
         <div id="detail-container" class="mt-8 hidden"></div>
     </div>
@@ -153,7 +136,7 @@
 
             detailContainer.classList.add('hidden');
             resultsContainer.classList.remove('hidden');
-            resultsContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><p class="text-gray-600">Searching for providers...</p></div>`;
+            resultsContainer.innerHTML = `<div class="card p-8 rounded-xl shadow-lg text-center"><p class="text-secondary">Searching for providers...</p></div>`;
 
             const params = new URLSearchParams({ version: '2.1' });
 
@@ -175,7 +158,7 @@
 
             const queryString = params.toString();
             if (queryString === 'version=2.1') {
-                 resultsContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><h3 class="text-lg font-medium text-gray-800">Please enter search criteria</h3><p class="text-gray-500 mt-1">You must provide at least one search term to get results.</p></div>`;
+                 resultsContainer.innerHTML = `<div class="card p-8 rounded-xl shadow-lg text-center"><h3 class="heading-primary text-lg font-medium text-gray-800">Please enter search criteria</h3><p class="text-secondary mt-1">You must provide at least one search term to get results.</p></div>`;
                 return;
             }
 
@@ -192,14 +175,14 @@
                 displayResults(data);
             } catch (error) {
                 console.error("Failed to fetch NPI data:", error);
-                resultsContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><h3 class="text-lg font-medium text-red-700">An Error Occurred</h3><p class="text-gray-500 mt-1">${error.message}. Please try again.</p></div>`;
+                resultsContainer.innerHTML = `<div class="card p-8 rounded-xl shadow-lg text-center"><h3 class="heading-primary text-lg font-medium text-red-700">An Error Occurred</h3><p class="text-secondary mt-1">${error.message}. Please try again.</p></div>`;
             }
         });
 
         function displayResults(data) {
             currentResultsData = data.results || [];
             if (data.result_count === 0) {
-                resultsContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><h3 class="text-lg font-medium text-gray-800">No Results Found</h3><p class="text-gray-500 mt-1">Please try again with different search criteria.</p></div>`;
+                resultsContainer.innerHTML = `<div class="card p-8 rounded-xl shadow-lg text-center"><h3 class="heading-primary text-lg font-medium text-gray-800">No Results Found</h3><p class="text-secondary mt-1">Please try again with different search criteria.</p></div>`;
                 return;
             }
 
@@ -212,18 +195,18 @@
                 const address = location.address_1 ? `${location.address_1}, ${location.city}, ${location.state} ${location.postal_code}` : 'N/A';
 
                 tableRows += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-900"><a href="#" onclick="showProviderDetails(${index}); return false;">${provider.number}</a></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${name}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500">${primaryTaxonomy.desc}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${address}</td>
+                    <tr>
+                        <td><a href="#" onclick="showProviderDetails(${index}); return false;" class="link-text">${provider.number}</a></td>
+                        <td>${name}</td>
+                        <td>${primaryTaxonomy.desc}</td>
+                        <td>${address}</td>
                     </tr>`;
             });
 
             resultsContainer.innerHTML = `
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                    <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-gray-800">Search Results</h2><p class="text-sm text-gray-600 mt-1">Found ${data.result_count} matching provider(s).</p></div>
-                    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NPI</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Taxonomy</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">${tableRows}</tbody></table></div></div>`;
+                <div class="results-table-wrapper">
+                    <div class="table-header"><h2>Search Results</h2><p>Found ${data.result_count} matching provider(s).</p></div>
+                    <table><thead><tr><th>NPI</th><th>Name</th><th>Primary Taxonomy</th><th>Location</th></tr></thead><tbody>${tableRows}</tbody></table></div>`;
         }
 
         function showProviderDetails(index) {
@@ -295,10 +278,11 @@
             }
 
             detailContainer.innerHTML = `
-                <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+                <div class="card p-6 sm:p-8">
+                    <!-- Header -->
                     <div class="flex justify-between items-start pb-4 border-b border-gray-200">
                         <div>
-                            <h2 class="text-2xl font-bold text-gray-900">${name}</h2>
+                            <h2 class="heading-primary">${name}</h2>
                             <p class="text-lg text-gray-600">NPI: ${provider.number}</p>
                         </div>
                         <button onclick="backToResults()" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 inline-flex items-center flex-shrink-0 ml-4">
@@ -307,8 +291,10 @@
                         </button>
                     </div>
 
+                    <!-- Details Grid -->
                     <div class="mt-6 space-y-6">
 
+                        <!-- General Information Card -->
                         <div class="bg-gray-50 p-4 rounded-lg">
                              <h3 class="text-lg font-semibold text-gray-800 mb-3">General Information</h3>
                              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
@@ -321,29 +307,35 @@
                              </div>
                         </div>
 
+                        <!-- Authorized Official Card -->
                         ${provider.enumeration_type === 'NPI-2' ? `
                         <div class="bg-gray-50 p-4 rounded-lg">
                              <h3 class="text-lg font-semibold text-gray-800 mb-3">Authorized Official</h3>
                              <div class="text-sm">${authorizedOfficialHtml}</div>
                         </div>` : ''}
 
+                        <!-- Main Details in Two Columns -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
 
+                            <!-- Addresses -->
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Addresses</h3>
                                 ${addressesHtml}
                             </div>
 
+                            <!-- Taxonomies -->
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Taxonomies</h3>
                                 <ul class="divide-y divide-gray-200">${taxonomiesHtml}</ul>
                             </div>
 
-                             <div>
+                             <!-- Endpoints -->
+                            <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Health Information Exchange</h3>
                                 <ul class="divide-y divide-gray-200">${endpointsHtml}</ul>
                             </div>
 
+                            <!-- Other Identifiers -->
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Other Identifiers</h3>
                                 <ul class="divide-y divide-gray-200">${identifiersHtml}</ul>
