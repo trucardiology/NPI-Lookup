@@ -4,26 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NPPES NPI Registry Search</title>
-    <!-- Using Tailwind CSS for a clean, modern design -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles for a little extra polish */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Lighter background */
         }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         .form-label {
             @apply block text-sm font-medium text-gray-700 mb-1;
         }
         .form-input {
-            @apply block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+            @apply block w-full px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm; /* Updated focus colors and transition */
         }
         .search-btn {
-            @apply w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500;
+            @apply w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-300; /* Updated colors and padding */
         }
         /* Styles for the custom dropdown */
         .taxonomy-option {
-            @apply px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-indigo-50 hover:text-indigo-900;
+            @apply px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-indigo-100 hover:text-indigo-900; /* Updated hover colors */
         }
     </style>
 </head>
@@ -33,8 +33,7 @@
         <div id="search-container" class="bg-white p-8 rounded-xl shadow-lg">
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">NPPES NPI Registry Search</h1>
             <p class="text-gray-600 mb-6">Enter search criteria below to find a provider's NPI data.</p>
-            
-            <!-- Search form -->
+
             <form id="search-form">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
@@ -45,8 +44,7 @@
                         <label for="taxonomy-input" class="form-label">Taxonomy Description</label>
                         <input type="text" id="taxonomy-input" class="form-input" autocomplete="off">
                         <div id="taxonomy-dropdown" class="absolute z-10 w-full bg-white border border-gray-300 rounded-md mt-1 shadow-lg hidden max-h-60 overflow-y-auto">
-                            <!-- Options will be populated by JS -->
-                        </div>
+                            </div>
                     </div>
                     <div>
                         <label for="first_name" class="form-label">First Name</label>
@@ -77,7 +75,6 @@
             </form>
         </div>
 
-        <!-- Container for results and details -->
         <div id="results-container" class="mt-8"></div>
         <div id="detail-container" class="mt-8 hidden"></div>
     </div>
@@ -125,7 +122,7 @@
                 taxonomyDropdown.appendChild(option);
             });
         }
-        
+
         function filterTaxonomyDropdown() {
             const filter = taxonomyInput.value.toUpperCase();
             const options = taxonomyDropdown.getElementsByClassName('taxonomy-option');
@@ -145,7 +142,7 @@
             setTimeout(() => taxonomyDropdown.classList.add('hidden'), 150);
         });
         taxonomyInput.addEventListener('input', filterTaxonomyDropdown);
-        
+
         // Initial population
         populateTaxonomyDropdown();
         // --- End Taxonomy Dropdown Logic ---
@@ -153,13 +150,13 @@
 
         searchForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             detailContainer.classList.add('hidden');
             resultsContainer.classList.remove('hidden');
             resultsContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><p class="text-gray-600">Searching for providers...</p></div>`;
 
             const params = new URLSearchParams({ version: '2.1' });
-            
+
             const npi = document.getElementById('npi').value;
             const firstName = document.getElementById('first_name').value;
             const lastName = document.getElementById('last_name').value;
@@ -184,7 +181,7 @@
 
             const apiUrl = `https://npiregistry.cms.hhs.gov/api/?${queryString}`;
             const url = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
-            
+
             try {
                 const response = await fetch(url);
                 const data = await response.json();
@@ -198,7 +195,7 @@
                 resultsContainer.innerHTML = `<div class="bg-white p-8 rounded-xl shadow-lg text-center"><h3 class="text-lg font-medium text-red-700">An Error Occurred</h3><p class="text-gray-500 mt-1">${error.message}. Please try again.</p></div>`;
             }
         });
-        
+
         function displayResults(data) {
             currentResultsData = data.results || [];
             if (data.result_count === 0) {
@@ -213,7 +210,7 @@
                 const primaryTaxonomy = provider.taxonomies.find(t => t.primary) || provider.taxonomies[0] || { desc: 'N/A' };
                 const location = provider.addresses.find(a => a.address_purpose === 'LOCATION') || provider.addresses[0] || {};
                 const address = location.address_1 ? `${location.address_1}, ${location.city}, ${location.state} ${location.postal_code}` : 'N/A';
-                
+
                 tableRows += `
                     <tr class="hover:bg-gray-50">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-600 hover:text-indigo-900"><a href="#" onclick="showProviderDetails(${index}); return false;">${provider.number}</a></td>
@@ -228,7 +225,7 @@
                     <div class="p-6 border-b border-gray-200"><h2 class="text-xl font-semibold text-gray-800">Search Results</h2><p class="text-sm text-gray-600 mt-1">Found ${data.result_count} matching provider(s).</p></div>
                     <div class="overflow-x-auto"><table class="min-w-full divide-y divide-gray-200"><thead class="bg-gray-50"><tr><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NPI</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Primary Taxonomy</th><th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th></tr></thead><tbody class="bg-white divide-y divide-gray-200">${tableRows}</tbody></table></div></div>`;
         }
-        
+
         function showProviderDetails(index) {
             const provider = currentResultsData[index];
             resultsContainer.classList.add('hidden');
@@ -236,8 +233,8 @@
 
             const basic = provider.basic || {};
             const name = basic.organization_name || `${basic.first_name || ''} ${basic.last_name || ''}`.trim();
-            const status = basic.status === 'A' ? 
-                '<span class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>' : 
+            const status = basic.status === 'A' ?
+                '<span class="text-xs font-semibold bg-green-100 text-green-800 px-2 py-1 rounded-full">Active</span>' :
                 '<span class="text-xs font-semibold bg-red-100 text-red-800 px-2 py-1 rounded-full">Inactive</span>';
 
             // Format addresses with correct labels
@@ -299,7 +296,6 @@
 
             detailContainer.innerHTML = `
                 <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
-                    <!-- Header -->
                     <div class="flex justify-between items-start pb-4 border-b border-gray-200">
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900">${name}</h2>
@@ -311,10 +307,8 @@
                         </button>
                     </div>
 
-                    <!-- Details Grid -->
                     <div class="mt-6 space-y-6">
 
-                        <!-- General Information Card -->
                         <div class="bg-gray-50 p-4 rounded-lg">
                              <h3 class="text-lg font-semibold text-gray-800 mb-3">General Information</h3>
                              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
@@ -326,36 +320,30 @@
                                 ${provider.enumeration_type === 'NPI-1' ? `<div><p class="font-medium text-gray-500">Gender</p><p class="text-gray-800">${basic.gender || 'N/A'}</p></div>` : ''}
                              </div>
                         </div>
-                        
-                        <!-- Authorized Official Card -->
+
                         ${provider.enumeration_type === 'NPI-2' ? `
                         <div class="bg-gray-50 p-4 rounded-lg">
                              <h3 class="text-lg font-semibold text-gray-800 mb-3">Authorized Official</h3>
                              <div class="text-sm">${authorizedOfficialHtml}</div>
                         </div>` : ''}
 
-                        <!-- Main Details in Two Columns -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
-                            
-                            <!-- Addresses -->
+
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Addresses</h3>
                                 ${addressesHtml}
                             </div>
-                            
-                            <!-- Taxonomies -->
+
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Taxonomies</h3>
                                 <ul class="divide-y divide-gray-200">${taxonomiesHtml}</ul>
                             </div>
 
-                             <!-- Endpoints -->
-                            <div>
+                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Health Information Exchange</h3>
                                 <ul class="divide-y divide-gray-200">${endpointsHtml}</ul>
                             </div>
 
-                            <!-- Other Identifiers -->
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">Other Identifiers</h3>
                                 <ul class="divide-y divide-gray-200">${identifiersHtml}</ul>
@@ -376,4 +364,3 @@
     </script>
 </body>
 </html>
-
